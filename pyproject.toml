@@ -1,13 +1,11 @@
 [project]
 name = "hoi4-mod-manager"
-version = "0.1.0"
+version = "1.0.0"
 description = "使用SteamCMD下载钢铁雄心4Mod"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "lib-not-dr[nuitka]>=0.4.0",
     "loguru>=0.7.2",
-    "nuitka>=2.4.8",
     "prompt-toolkit>=3.0.48",
     "requests>=2.32.3",
     "rich>=13.9.1",
@@ -16,8 +14,12 @@ dependencies = [
 ]
 
 [tool.uv]
-dev-dependencies = ["ruff>=0.6.8"]
-
+dev-dependencies = [
+    "lib-not-dr[nuitka]>=0.4.0",
+    "nuitka>=2.4.8",
+    "ruff>=0.6.8",
+    "tomli>=2.0.2",
+]
 
 [tool.ruff]
 line-length = 100
@@ -42,6 +44,7 @@ script = "tools/lndl-config.py"
 [tool.lndl.nuitka.cli]
 main = "src/hoi4-mods-manager.py"
 output-dir = "build"
+
 clang = true
 msvc = "latest"
 standalone = true
@@ -50,8 +53,16 @@ lto = "yes"
 disable-console = false
 show-memory = false
 show-progress = false
+
 product-version = false
 file-version = false
+
 product-name = "hoi4 mods manager"
 company-name = "Arama"
+file-description = "hoi4 mods manager"
+copyright = "Copyright ©Arama. All rights reserved."
+
 assume-yes-for-download = true
+
+# 依赖
+include-package = ["steam"]

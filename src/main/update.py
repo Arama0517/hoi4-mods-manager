@@ -1,3 +1,4 @@
+import time
 from loguru import logger
 from prompt_toolkit.shortcuts import message_dialog
 
@@ -23,4 +24,5 @@ def main():
             (MOD_BOOT_FILES_PATH / f'{item_id}.mod').unlink(missing_ok=True)
         else:
             logger.info(f'{item_info['title']} 已经是最新版本')
+    time.sleep(1)
     message_dialog(TITLE, '更新完成', '返回').run()

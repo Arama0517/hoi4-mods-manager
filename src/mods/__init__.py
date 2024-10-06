@@ -2,14 +2,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from rich.progress import (
-    BarColumn,
-    Progress,
-    TaskID,
-    TaskProgressColumn,
-    TextColumn,
-    TimeRemainingColumn,
-)
+from rich.progress import Progress
 from steam.client.cdn import CDNDepotFile, CDNDepotManifest, ManifestError
 
 from utils import (
@@ -22,23 +15,25 @@ from utils import (
 )
 
 
-def _write_mod_data(
-    files: list[CDNDepotFile], mod_dir_path: Path, task_id: TaskID, progress: Progress
-):
+def _write_mod_data(files: list[CDNDepotFile], mod_dir_path: Path, progress: Progress):
+    task_id = progress.add_task('', total=len(files))
     for file in files:
         if file.is_directory:
+            progress.update(task_id, advance=1)
             continue
         path: Path = mod_dir_path / file.filename
-        progress.update(task_id, file_name=path.name)
+        description = (
+            f'[bold green]线程 [bold red]{task_id} [bold green]正在下载 [bold blue]{path.name}'
+        )
+        progress.update(task_id, description=description)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(file.read())
         progress.update(task_id, advance=1)
+    progress.remove_task(task_id)
 
 
 def download(item_id: str):
-    result: ManifestError | CDNDepotManifest = STEAM_CDN_CLIENT.get_manifest_for_workshop_item(
-        int(item_id)
-    )
+    result = STEAM_CDN_CLIENT.get_manifest_for_workshop_item(int(item_id))
     if isinstance(result, ManifestError):
         raise result
     result: CDNDepotManifest
@@ -48,14 +43,8 @@ def download(item_id: str):
     default_max_workers = os.cpu_count() * 2
     max_workers = len(files) if len(files) < default_max_workers else default_max_workers
     chunk_size = len(files) // max_workers
-    with Progress(
-        TextColumn('[bold green]{task.description}'),
-        TextColumn('[bold blue]{task.fields[file_name]}'),
-        BarColumn(),
-        TaskProgressColumn(),
-        TimeRemainingColumn(),
-    ) as progress:
-        chunks = []
+    with Progress() as progress:
+        chunks: list[list[CDNDepotFile]] = []
         for i in range(max_workers):
             start_index = i * chunk_size
             end_index = start_index + chunk_size if i < max_workers - 1 else len(files)
@@ -69,6 +58,5 @@ def download(item_id: str):
                     _write_mod_data,
                     chunk,
                     mod_dir_path,
-                    progress.add_task('正在下载', total=len(chunk), file_name=''),
                     progress,
                 )

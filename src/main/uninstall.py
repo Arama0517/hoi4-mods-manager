@@ -15,7 +15,7 @@ def main():
         message_dialog(TITLE, '你还没有安装任何模组', '返回').run()
         return
     items_id = radiolist_dialog(TITLE, '请选择要卸载的模组', '卸载', '取消', options).run()
-    if not item_id:
+    if not items_id:
         return
     for item_id in items_id:
         shutil.rmtree(LAUNCHER_SETTINGS['mods'][item_id]['path'])
