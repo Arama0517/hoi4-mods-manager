@@ -1,0 +1,26 @@
+name: 检查代码
+
+on:
+  push:
+    paths:
+      - "pyproject.toml"
+      - "**/*.py"
+      - "Taskfile.yml"
+      - ".github/workflows/*.yml"
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "**/*.py"
+      - "Taskfile.yml"
+      - ".github/workflows/*.yml"
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: arduino/setup-task@v2
+
+      - name: 运行 ruff
+        run: task check -- --no-fix --output-format=github

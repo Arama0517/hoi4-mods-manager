@@ -1,0 +1,57 @@
+name: 创建发行版
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 创建时标签名
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: arduino/setup-task@v2
+
+      - name: 下载依赖
+        run: task sync
+
+      - name: 构建
+        run: task build
+
+      - name: 上传
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'windows'
+          path: |
+            build/hoi4-mods-manager.exe
+
+  release:
+    runs-on: ubuntu-latest
+    needs: windows
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+      - uses: actions/download-artifact@v4
+
+      - name: 压缩
+        run: |
+          7za -tzip "windows-x64.zip" ./windows/hoi4-mods-manager.exe ./repo/README.md ./repo/LICENSE
+
+      - name: 创建发行版
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: repo/CHANGELOG.md
+          prerelease: false
+          draft: false
+          tag_name: ${{ inputs.tag_name }}
+          files: |
+            *.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

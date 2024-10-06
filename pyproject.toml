@@ -1,0 +1,58 @@
+[project]
+name = "hoi4-mod-manager"
+version = "0.1.0"
+description = "使用SteamCMD下载钢铁雄心4Mod"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "lib-not-dr[nuitka]>=0.4.0",
+    "loguru>=0.7.2",
+    "nuitka>=2.4.8",
+    "prompt-toolkit>=3.0.48",
+    "requests>=2.32.3",
+    "rich>=13.9.1",
+    "steam[client]>=1.4.4",
+    "vdf>=3.4",
+]
+
+[tool.uv]
+dev-dependencies = ["ruff>=0.6.8"]
+
+
+[tool.ruff]
+line-length = 100
+output-format = "grouped"
+preview = true
+fix = true
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "N", "I"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
+
+[tool.lndl.nuitka]
+script = "tools/lndl-config.py"
+
+[tool.lndl.nuitka.cli]
+main = "src/hoi4-mods-manager.py"
+output-dir = "build"
+clang = true
+msvc = "latest"
+standalone = true
+onefile = true
+lto = "yes"
+disable-console = false
+show-memory = false
+show-progress = false
+product-version = false
+file-version = false
+product-name = "hoi4 mods manager"
+company-name = "Arama"
+file-description = "钢铁雄心4模组管理器"
+assume-yes-for-download = true

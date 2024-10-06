@@ -1,0 +1,22 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+    schedule:
+      interval: daily
+      
+  - package-ecosystem: pip
+    directory: /
+    labels:
+      - dependencies
+    commit-message:
+      prefix: chore
+      include: scope
+    schedule:
+      interval: daily
