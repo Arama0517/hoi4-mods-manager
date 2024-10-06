@@ -42,7 +42,7 @@ jobs:
 
       - name: 压缩
         run: |
-          7za -tzip "windows-x64.zip" ./windows/hoi4-mods-manager.exe ./repo/README.md ./repo/LICENSE
+          7z a -tzip "windows-x64.zip" ./windows/hoi4-mods-manager.exe ./repo/README.md ./repo/LICENSE
 
       - name: 创建发行版
         uses: softprops/action-gh-release@v2
