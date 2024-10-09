@@ -4,7 +4,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from utils import CWD, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
+from src.common.path import CWD, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
 
 _PATH_REGEX = r'(?:^|[^a-zA-Z_])path\s*=\s*"([^"]+)"'
 
@@ -33,15 +33,15 @@ def main():
     # 生成mod定位文件
     for mod in MODS_DIR_PATH.iterdir():
         mod_boot_file_path = MOD_BOOT_FILES_PATH / f'{mod.name}.mod'
-        ok = False
+
+        mod_decsriptor_file_path = Path('$')  # 非法路径, 用于测试是否存在
         for f in mod.iterdir():
             if f.suffix == '.mod':
-                ok = True
                 mod_decsriptor_file_path = f
                 break
 
         # 没有找到描述文件, 可能不是mod; 跳过
-        if not ok:
+        if not mod_decsriptor_file_path.exists():
             continue
 
         if not mod_boot_file_path.exists():

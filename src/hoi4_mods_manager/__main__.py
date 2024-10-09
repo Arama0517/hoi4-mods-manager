@@ -2,8 +2,9 @@ from sys import exit
 
 from prompt_toolkit.shortcuts import radiolist_dialog
 
-from main import install, start, uninstall, update
-from utils import TITLE, clear
+from src.common.cmd import clear
+from src.common.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
+from src.hoi4_mods_manager import install, start, uninstall, update
 
 
 def main() -> int:
@@ -17,7 +18,11 @@ def main() -> int:
     while True:
         clear()
         result = radiolist_dialog(
-            TITLE, text='请选择一个选项', values=options, ok_text='确定', cancel_text='退出'
+            PROMPT_TOOLKIT_DIALOG_TITLE,
+            text='请选择一个选项',
+            values=options,
+            ok_text='确定',
+            cancel_text='退出',
         ).run()
         match result:
             case None:

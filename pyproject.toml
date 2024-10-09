@@ -17,6 +17,7 @@ dependencies = [
 dev-dependencies = [
     "lib-not-dr[nuitka]>=0.4.0",
     "nuitka>=2.4.8",
+    "pytest>=8.3.3",
     "ruff>=0.6.8",
     "tomli>=2.0.2",
 ]
@@ -42,8 +43,9 @@ docstring-code-format = true
 script = "tools/lndl-config.py"
 
 [tool.lndl.nuitka.cli]
-main = "src/hoi4-mods-manager.py"
+main = "src/hoi4_mods_manager/__main__.py"
 output-dir = "build"
+output-filename = "hoi4-mods-manager.exe"
 
 clang = true
 msvc = "latest"

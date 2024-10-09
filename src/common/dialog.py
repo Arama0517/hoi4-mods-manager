@@ -1,0 +1,1 @@
+PROMPT_TOOLKIT_DIALOG_TITLE = '钢铁雄心4模组管理器'

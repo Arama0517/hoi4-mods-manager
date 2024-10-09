@@ -3,16 +3,10 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from rich.progress import Progress
-from steam.client.cdn import CDNDepotFile, CDNDepotManifest, ManifestError
+from steam.client.cdn import CDNClient, CDNDepotFile, CDNDepotManifest, ManifestError
 
-from utils import (
-    LAUNCHER_SETTINGS as LAUNCHER_SETTINGS,
-    LAUNCHER_SETTINGS_FILE_PATH as LAUNCHER_SETTINGS_FILE_PATH,
-    MODS_DIR_PATH,
-    STEAM_CDN_CLIENT,
-    TITLE as TITLE,
-    message_dialog as message_dialog,
-)
+from src.common.path import MODS_DIR_PATH
+from src.common.steam import get_steam_client
 
 
 def _write_mod_data(files: list[CDNDepotFile], mod_dir_path: Path, progress: Progress):
@@ -33,7 +27,7 @@ def _write_mod_data(files: list[CDNDepotFile], mod_dir_path: Path, progress: Pro
 
 
 def download(item_id: str):
-    result = STEAM_CDN_CLIENT.get_manifest_for_workshop_item(int(item_id))
+    result = CDNClient(get_steam_client()).get_manifest_for_workshop_item(int(item_id))
     if isinstance(result, ManifestError):
         raise result
     result: CDNDepotManifest
@@ -50,6 +44,7 @@ def download(item_id: str):
             end_index = start_index + chunk_size if i < max_workers - 1 else len(files)
             chunk = files[start_index:end_index]
             chunks.append(chunk)
+        max_workers = len(chunks)
 
         # 多线程下载
         with ThreadPoolExecutor(max_workers=max_workers) as executor:

@@ -27,7 +27,11 @@ tasks:
 
   run:
     desc: 运行主程序
-    cmd: uv run python src/hoi4-mods-manager.py
+    cmd: uv run python -m src.hoi4_mods_manager {{ .CLI_ARGS }}
+
+  test:
+    desc: 运行测试
+    cmd: uv run pytest {{ .CLI_ARGS }}
 
   default:
     desc: 运行默认任务

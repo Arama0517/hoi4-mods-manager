@@ -15,6 +15,16 @@ on:
       - ".github/workflows/*.yml"
 
 jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: arduino/setup-task@v2
+
+      - name: 运行测试
+        run: task test
+
   check:
     runs-on: windows-latest
     steps:
