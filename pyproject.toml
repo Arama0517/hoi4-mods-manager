@@ -1,6 +1,6 @@
 [project]
 name = "hoi4-mod-manager"
-version = "1.0.0"
+version = "1.1.0"
 description = "使用SteamCMD下载钢铁雄心4Mod"
 readme = "README.md"
 requires-python = ">=3.12"
