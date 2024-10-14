@@ -3,13 +3,14 @@ import time
 from loguru import logger
 from prompt_toolkit.shortcuts import message_dialog
 from steam import webapi
+from steam.client.cdn import CDNClient
 
 from src.common import mods, settings
 from src.common.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
 from src.common.path import MOD_BOOT_FILES_PATH
 
 
-def main():
+def main(cdn_client: CDNClient):
     items_id = list(settings['mods'].keys())
     if len(items_id) == 0:
         message_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '你还没有安装任何模组', '返回').run()
@@ -25,7 +26,8 @@ def main():
     for item_info in items_info:
         item_id = item_info['publishedfileid']
         if item_info['time_updated'] != settings['mods'][item_id]['time_updated']:
-            mods.download(item_info)
+            # 需要更新模组
+            mods.download(item_info, cdn_client)
             settings['mods'][item_id] = item_info
             (MOD_BOOT_FILES_PATH / f'{item_id}.mod').unlink(missing_ok=True)
         else:

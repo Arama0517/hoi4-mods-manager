@@ -5,6 +5,7 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.shortcuts import input_dialog, message_dialog, yes_no_dialog
 from prompt_toolkit.validation import ValidationError, Validator
 from steam import webapi
+from steam.client.cdn import CDNClient
 from steam.enums import EResult
 
 from src.common import (
@@ -36,7 +37,7 @@ class _SteamIDValidator(Validator):
             raise ValidationError(message='暂不支持其他游戏的模组')
 
 
-def main() -> None:
+def main(cdn_client: CDNClient) -> None:
     while True:
         clear()
         item_id = input_dialog(
@@ -69,7 +70,7 @@ def main() -> None:
             continue
 
         try:
-            mods.download(item_id)
+            mods.download(item_id, cdn_client)
 
             settings['mods'][item_id] = item_info
             with LAUNCHER_SETTINGS_FILE_PATH.open('w', encoding='utf-8') as f:

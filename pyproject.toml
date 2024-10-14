@@ -8,9 +8,8 @@ dependencies = [
     "loguru>=0.7.2",
     "prompt-toolkit>=3.0.48",
     "requests>=2.32.3",
-    "rich>=13.9.1",
+    "rich>=13.9.2",
     "steam[client]>=1.4.4",
-    "vdf>=3.4",
 ]
 
 [tool.uv]
@@ -21,6 +20,9 @@ dev-dependencies = [
     "ruff>=0.6.8",
     "tomli>=2.0.2",
 ]
+
+[tool.uv.sources]
+steam = { git = "https://github.com/detiam/steam_websocket.git", rev = "solsticegamestudios_fork" }
 
 [tool.ruff]
 line-length = 100
@@ -43,7 +45,7 @@ docstring-code-format = true
 script = "tools/lndl-config.py"
 
 [tool.lndl.nuitka.cli]
-main = "src/hoi4_mods_manager/__main__.py"
+main = "src/hoi4_mods_manager/main.py"
 output-dir = "build"
 output-filename = "hoi4-mods-manager.exe"
 
@@ -51,20 +53,11 @@ clang = true
 msvc = "latest"
 standalone = true
 onefile = true
-lto = "yes"
-disable-console = false
-show-memory = false
-show-progress = false
-
-product-version = false
-file-version = false
 
 product-name = "hoi4 mods manager"
 company-name = "Arama"
 file-description = "hoi4 mods manager"
 copyright = "Copyright ©Arama. All rights reserved."
-
-assume-yes-for-download = true
 
 # 依赖
 include-package = ["steam"]

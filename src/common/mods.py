@@ -3,55 +3,56 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from rich.progress import Progress
-from steam.client.cdn import CDNClient, CDNDepotFile, CDNDepotManifest, ManifestError
+from steam.client.cdn import CDNClient, CDNDepotFile, CDNDepotManifest
 
 from src.common.path import MODS_DIR_PATH
-from src.common.steam import get_steam_client
 
 
-def _write_mod_data(files: list[CDNDepotFile], mod_dir_path: Path, progress: Progress):
+def _write_mod_files(files: list[CDNDepotFile], mod_dir_path: Path, progress: Progress):
     task_id = progress.add_task('', total=len(files))
     for file in files:
-        if file.is_directory:
-            progress.update(task_id, advance=1)
-            continue
         path: Path = mod_dir_path / file.filename
-        description = (
-            f'[bold green]线程 [bold red]{task_id} [bold green]正在下载 [bold blue]{path.name}'
-        )
-        progress.update(task_id, description=description)
+        progress.update(task_id, description=f'[bold green]正在下载 [bold blue]{path.name}')
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(file.read())
         progress.update(task_id, advance=1)
     progress.remove_task(task_id)
 
 
-def download(item_id: str):
-    result = CDNClient(get_steam_client()).get_manifest_for_workshop_item(int(item_id))
-    if isinstance(result, ManifestError):
-        raise result
-    result: CDNDepotManifest
+def _sort_cdn_depot_files(
+    manifest: CDNDepotManifest,
+    mod_dir_path: Path,
+) -> tuple[list[list[CDNDepotFile]], list[Path]]:
+    directories = []
+    files = []
+    for target in manifest.iter_files():
+        if target.is_directory:
+            directories.append(mod_dir_path / target.filename)
+        else:
+            files.append(target)
+
+    max_chunks = min(len(files), os.cpu_count())
+    chunks = [[] for _ in range(max_chunks)]
+    chunk_sizes = [0] * max_chunks
+
+    for file in sorted(files, key=lambda f: f.size, reverse=True):
+        min_chunk_index = chunk_sizes.index(min(chunk_sizes))
+        chunks[min_chunk_index].append(file)
+        chunk_sizes[min_chunk_index] += file.size
+
+    return chunks, directories
+
+
+def download(item_id: str, steam_cdn_client: CDNClient):
+    manifest = steam_cdn_client.get_manifest_for_workshop_item(int(item_id))
+    if isinstance(manifest, Exception):
+        raise manifest
+    manifest: CDNDepotManifest
     mod_dir_path = MODS_DIR_PATH / item_id
-    files: list[CDNDepotFile] = list(result.iter_files())
-
-    default_max_workers = os.cpu_count() * 2
-    max_workers = len(files) if len(files) < default_max_workers else default_max_workers
-    chunk_size = len(files) // max_workers
+    chunks, directories = _sort_cdn_depot_files(manifest, mod_dir_path)
+    for directory in directories:
+        directory.mkdir(parents=True, exist_ok=True)
     with Progress() as progress:
-        chunks: list[list[CDNDepotFile]] = []
-        for i in range(max_workers):
-            start_index = i * chunk_size
-            end_index = start_index + chunk_size if i < max_workers - 1 else len(files)
-            chunk = files[start_index:end_index]
-            chunks.append(chunk)
-        max_workers = len(chunks)
-
-        # 多线程下载
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        with ThreadPoolExecutor(max_workers=len(chunks)) as executor:
             for chunk in chunks:
-                executor.submit(
-                    _write_mod_data,
-                    chunk,
-                    mod_dir_path,
-                    progress,
-                )
+                executor.submit(_write_mod_files, chunk, mod_dir_path, progress)

@@ -1,39 +1,36 @@
-# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: 3
 
 tasks:
-  sync:
-    desc: 同步
-    cmds:
-      - uv sync
-
   build:
+    aliases:
+      - b
     desc: 构建
-    sources:
-      - ./**/*.py
-    generates:
-      - "./build/hoi4-mods-manager.exe"
-    cmds: 
-      - uv run python -m lndl_nuitka . -y {{ .CLI_ARGS }} .
+    cmds:
+      -
+      - uv run -m lndl_nuitka . -y {{ .CLI_ARGS }}
 
   check:
+    aliases:
+      - c
     desc: 使用 ruff 检查并修复代码
-    cmds:
-      - uv run ruff check {{ .CLI_ARGS }} .
+    cmd: uv run -m ruff check {{ .CLI_ARGS }} .
 
-  fmt:
+  format:
+    aliases:
+      - fmt
+      - f
     desc: 使用 ruff 格式化代码
-    cmd: uv run ruff format {{ .CLI_ARGS }} .
+    cmd: uv run -m ruff format {{ .CLI_ARGS }} .
 
   run:
+    aliases:
+      - default # 默认运行
+      - r
     desc: 运行主程序
-    cmd: uv run python -m src.hoi4_mods_manager {{ .CLI_ARGS }}
+    cmd: uv run -m src.hoi4_mods_manager.main {{ .CLI_ARGS }}
 
   test:
+    aliases:
+      - t
     desc: 运行测试
     cmd: uv run pytest {{ .CLI_ARGS }}
-
-  default:
-    desc: 运行默认任务
-    cmds:
-      - task: run

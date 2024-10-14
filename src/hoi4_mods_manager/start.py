@@ -34,13 +34,13 @@ def main():
     for mod in MODS_DIR_PATH.iterdir():
         mod_boot_file_path = MOD_BOOT_FILES_PATH / f'{mod.name}.mod'
 
-        mod_decsriptor_file_path = Path('$')  # 非法路径, 用于测试是否存在
+        mod_decsriptor_file_path = Path('$')
         for f in mod.iterdir():
             if f.suffix == '.mod':
                 mod_decsriptor_file_path = f
                 break
 
-        # 没有找到描述文件, 可能不是mod; 跳过
+        # 没有找到描述文件, 可能不是mod
         if not mod_decsriptor_file_path.exists():
             continue
 
