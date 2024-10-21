@@ -1,4 +1,3 @@
-import json
 import shutil
 
 from prompt_toolkit.document import Document
@@ -8,13 +7,12 @@ from steam import webapi
 from steam.client.cdn import CDNClient
 from steam.enums import EResult
 
-from src.common import (
-    mods,
-    settings,
-)
-from src.common.cmd import clear
-from src.common.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
-from src.common.path import LAUNCHER_SETTINGS_FILE_PATH, MODS_DIR_PATH
+from src import mods
+from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
+from src.path import MODS_DIR_PATH
+from src.settings import save_settings, settings
+
+__all__ = ['main']
 
 
 class _SteamIDValidator(Validator):
@@ -39,7 +37,6 @@ class _SteamIDValidator(Validator):
 
 def main(cdn_client: CDNClient) -> None:
     while True:
-        clear()
         item_id = input_dialog(
             PROMPT_TOOLKIT_DIALOG_TITLE,
             '请输入要安装的Mod的创意工坊ID',
@@ -70,13 +67,16 @@ def main(cdn_client: CDNClient) -> None:
             continue
 
         try:
-            mods.download(item_id, cdn_client)
+            mod_install_duration = mods.download(item_id, cdn_client).total_seconds()
 
             settings['mods'][item_id] = item_info
-            with LAUNCHER_SETTINGS_FILE_PATH.open('w', encoding='utf-8') as f:
-                json.dump(settings, f, indent=4, ensure_ascii=False)
+            save_settings()
 
-            message_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '下载完成', '继续').run()
+            message_dialog(
+                PROMPT_TOOLKIT_DIALOG_TITLE,
+                f'下载完成, 共计用时: {mod_install_duration:.2f}秒',
+                '继续',
+            ).run()
         except Exception as e:
             message_dialog(
                 PROMPT_TOOLKIT_DIALOG_TITLE, f'下载失败, 请稍后再试\n错误: {e}', '继续'

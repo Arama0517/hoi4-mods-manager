@@ -5,9 +5,7 @@ tasks:
     aliases:
       - b
     desc: 构建
-    cmds:
-      -
-      - uv run -m lndl_nuitka . -y {{ .CLI_ARGS }}
+    cmd: uv run -m lndl_nuitka . -y {{ .CLI_ARGS }}
 
   check:
     aliases:
@@ -27,10 +25,10 @@ tasks:
       - default # 默认运行
       - r
     desc: 运行主程序
-    cmd: uv run -m src.hoi4_mods_manager.main {{ .CLI_ARGS }}
+    cmd: uv run -m src.main {{ .CLI_ARGS }}
 
   test:
     aliases:
       - t
     desc: 运行测试
-    cmd: uv run pytest {{ .CLI_ARGS }}
+    cmd: uv run -m pytest {{ .CLI_ARGS }}

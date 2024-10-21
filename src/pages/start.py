@@ -4,7 +4,9 @@ from pathlib import Path
 
 from loguru import logger
 
-from src.common.path import CWD, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
+from src.path import CURRENT_DIR_PATH, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
+
+__all__ = ['main']
 
 _PATH_REGEX = r'(?:^|[^a-zA-Z_])path\s*=\s*"([^"]+)"'
 
@@ -56,4 +58,4 @@ def main():
                     f.write(data)
                     f.write(f'\npath="{mod.as_posix()}"')
 
-    subprocess.run(CWD / 'dowser.exe', cwd=CWD)
+    subprocess.check_call(CURRENT_DIR_PATH / 'dowser.exe')

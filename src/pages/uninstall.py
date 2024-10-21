@@ -1,17 +1,15 @@
-import json
 import shutil
 
 from prompt_toolkit.shortcuts import checkboxlist_dialog, message_dialog
 
-from src.common import settings
-from src.common.cmd import clear
-from src.common.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
-from src.common.path import LAUNCHER_SETTINGS_FILE_PATH, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
+from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
+from src.path import MOD_BOOT_FILES_PATH, MODS_DIR_PATH
+from src.settings import save_settings, settings
+
+__all__ = ['main']
 
 
 def main():
-    clear()
-
     options: list[tuple[str, str]] = []
     for item_id, item_info in settings['mods'].items():
         options.append((item_id, item_info['title']))
@@ -30,6 +28,5 @@ def main():
         del settings['mods'][item_id]
         (MOD_BOOT_FILES_PATH / f'{item_id}.mod').unlink(missing_ok=True)
 
-    with LAUNCHER_SETTINGS_FILE_PATH.open('w', encoding='utf-8') as f:
-        json.dump(settings, f, indent=4, ensure_ascii=False)
+    save_settings()
     message_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '卸载完成', '返回').run()

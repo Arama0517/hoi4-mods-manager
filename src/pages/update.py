@@ -5,9 +5,12 @@ from prompt_toolkit.shortcuts import message_dialog
 from steam import webapi
 from steam.client.cdn import CDNClient
 
-from src.common import mods, settings
-from src.common.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
-from src.common.path import MOD_BOOT_FILES_PATH
+from src import mods
+from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
+from src.path import MOD_BOOT_FILES_PATH
+from src.settings import save_settings, settings
+
+__all__ = ['main']
 
 
 def main(cdn_client: CDNClient):
@@ -23,14 +26,22 @@ def main(cdn_client: CDNClient):
             'publishedfileids': items_id,
         },
     )['response']['publishedfiledetails']
+
+    mod_update_durations = 0
     for item_info in items_info:
         item_id = item_info['publishedfileid']
         if item_info['time_updated'] != settings['mods'][item_id]['time_updated']:
+            logger.info(f'{item_info['title']} 需要更新')
             # 需要更新模组
-            mods.download(item_info, cdn_client)
+            mod_update_duration = mods.download(item_id, cdn_client).total_seconds()
             settings['mods'][item_id] = item_info
             (MOD_BOOT_FILES_PATH / f'{item_id}.mod').unlink(missing_ok=True)
+            save_settings()
+            mod_update_durations += mod_update_duration
+            logger.info(f'更新成功, 共计用时: {mod_update_duration:.2f}秒')
         else:
             logger.info(f'{item_info['title']} 已经是最新版本')
     time.sleep(1)
-    message_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '更新完成', '返回').run()
+    message_dialog(
+        PROMPT_TOOLKIT_DIALOG_TITLE, f'更新完成, 共计用时: {mod_update_durations:.2f}', '返回'
+    ).run()
