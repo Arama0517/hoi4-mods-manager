@@ -12,30 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
-
-      - name: 获取版本号
-        run: echo "version=$(uv run tools/get_version.py)" > $GITHUB_ENV
+      - uses: arduino/setup-task@v2
 
       - name: 构建
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          script-name: src/main.py
-          output-file: hoi4-mods-manager.exe
-
-          clang: true
-          msvc: latest
-          standalone: true
-          onefile: true
-
-          product-name: hoi4-mods-manager
-          company-name: Arama
-          file-description: 钢铁雄心4模组管理器
-          copyright: "Copyright ©Arama. All rights reserved."
-          product-version: ${{ env.version }}
-          file-version: ${{ env.version }}
-
-          include-package: steam
-
+        run: task build
 
       - name: 上传
         uses: actions/upload-artifact@v4
@@ -58,7 +38,7 @@ jobs:
           7z a -tzip "windows-x64.zip" ./windows/hoi4-mods-manager.exe ./repo/README.md ./repo/LICENSE
 
       - name: 获取版本号
-        run: cd repo && echo "version=$(uv run tools/get_version.py)" > $GITHUB_ENV
+        run: cd repo && echo "tag_name=$(uv run tools/get_tag_name.py)" > $GITHUB_ENV
 
       - name: 创建发行版
         uses: softprops/action-gh-release@v2
@@ -66,7 +46,7 @@ jobs:
           body_path: repo/CHANGELOG.md
           prerelease: false
           draft: false
-          tag_name: v${{ env.version }}
+          tag_name: ${{ env.tag_name }}
           files: |
             *.zip
         env:

@@ -15,6 +15,8 @@ dependencies = [
 
 [tool.uv]
 dev-dependencies = [
+    "lib-not-dr[nuitka]>=0.4.0",
+    "nuitka>=2.4.10",
     "pytest>=8.3.3",
     "ruff>=0.6.9",
     "tomli>=2.0.2",
@@ -40,23 +42,23 @@ quote-style = "single"
 indent-style = "space"
 docstring-code-format = true
 
-#[tool.lndl.nuitka]
-#script = "tools/lndl-config.py"
-#
-#[tool.lndl.nuitka.cli]
-#main = "src/main.py"
-#output-dir = "build"
-#output-filename = "hoi4-mods-manager.exe"
-#
-#clang = true
-#msvc = "latest"
-#standalone = true
-#onefile = true
-#
-#product-name = "hoi4 mods manager"
-#company-name = "Arama"
-#file-description = "hoi4 mods manager"
-#copyright = "Copyright ©Arama. All rights reserved."
-#
-## 依赖
-#include-package = ["steam"]
+[tool.lndl.nuitka]
+script = "tools/lndl-config.py"
+
+[tool.lndl.nuitka.cli]
+main = "src/main.py"
+output-dir = "build"
+output-filename = "hoi4-mods-manager.exe"
+
+clang = true
+msvc = "latest"
+standalone = true
+onefile = true
+
+product-name = "hoi4 mods manager"
+company-name = "Arama"
+file-description = "hoi4 mods manager"
+copyright = "Copyright ©Arama. All rights reserved."
+
+# 依赖
+include-package = ["steam"]
