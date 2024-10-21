@@ -43,7 +43,7 @@ indent-style = "space"
 docstring-code-format = true
 
 [tool.lndl.nuitka]
-script = "tools/lndl-config.py"
+script = "tools/lndl_config.py"
 
 [tool.lndl.nuitka.cli]
 main = "src/main.py"
