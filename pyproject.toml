@@ -49,15 +49,25 @@ main = "src/main.py"
 output-dir = "build"
 output-filename = "hoi4-mods-manager.exe"
 
+# 编译选项
 clang = true
 msvc = "latest"
 standalone = true
 onefile = true
+show-memory = false
+show-progress = false
 
-product-name = "hoi4 mods manager"
+# 版本号 构建时通过 tools/lndl_config.py 自动填充
+product-version = false
+file-version = false
+
+# 文件信息
+product-name = "hoi4-mods-manager"
 company-name = "Arama"
 file-description = "hoi4 mods manager"
 copyright = "Copyright ©Arama. All rights reserved."
 
 # 依赖
 include-package = ["steam"]
+
+assume-yes-for-download = true
