@@ -1,9 +1,9 @@
 # 钢铁雄心 4 模组管理器
 
 <p style="text-align: left;">
-  <img alt="GitHub License" src="https://img.shields.io/github/license/Arama0517/hoi4-mods-manager">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Arama0517/hoi4-mods-manager/check.yml?label=CI">
-  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/Arama0517/hoi4-mods-manager">
+  <a href="LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/Arama0517/hoi4-mods-manager"></a>
+  <a href="https://github.com/Arama0517/hoi4-mods-manager/actions/workflows/check.yml"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Arama0517/hoi4-mods-manager/check.yml?label=CI"></a>
+  <a href="https://github.com/Arama0517/hoi4-mods-manager/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/Arama0517/hoi4-mods-manager"></a>
 </p>
 
 ## 使用方式
@@ -12,8 +12,7 @@
 2. 解压到游戏的根目录
 3. 运行
 
-> [!WARNING]
-> 内置的账号不一定可用
+> [!WARNING] 内置的账号不一定可用
 
 ## 完成的功能
 
@@ -52,10 +51,9 @@
 
 ## 加速 `uv` 下载依赖和 `python`
 
-> [!TIP]
-> 仅适用于中国地区用户
+> [!TIP] 仅适用于中国地区用户
 
-1. 设置 `UV_PYTHON_INSTALL_MIRROR` 为 `https://ghp.ci/https://github.com/indygreg/python-build-standalone/releases/download`
+1. 设置环境变量 `UV_PYTHON_INSTALL_MIRROR` 为 `https://ghp.ci/https://github.com/indygreg/python-build-standalone/releases/download`
 2. 进入 `~\AppData\Roaming\uv` _如果没有这个目录就新建一个_
 3. 新建 `uv.toml` 文件, 内容:
 
