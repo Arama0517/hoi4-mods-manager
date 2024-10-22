@@ -1,6 +1,10 @@
 # 钢铁雄心 4 模组管理器
 
-_**从 Steam CDN 多线程下载模组**_
+<p style="text-align: left;">
+  <img alt="GitHub License" src="https://img.shields.io/github/license/Arama0517/hoi4-mods-manager">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Arama0517/hoi4-mods-manager/check.yml?label=CI">
+  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/Arama0517/hoi4-mods-manager">
+</p>
 
 ## 使用方式
 
@@ -32,15 +36,18 @@ _**从 Steam CDN 多线程下载模组**_
 ## 环境要求
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- [task](https://taskfile.dev/installation/) 类似 `make`  (可选)
+- [task](https://taskfile.dev/installation/) 类似 `make` (可选)
 - [VS 2022 Build Tools](https://visualstudio.microsoft.com/zh-hans/downloads/#build-tools-for-visual-studio-2022) 用于 nuitka 构建
 
 ## 初始化项目
+
 1. 克隆本项目
-2. 在项目根目录创建一个 `launcher-settings.json`, 内容: 
+2. 在项目根目录创建一个 `launcher-settings.json`, 内容:
+
 ```json
 {}
 ```
+
 3. 运行 `uv sync`
 
 ## 加速 `uv` 下载依赖和 `python`
