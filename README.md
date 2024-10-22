@@ -2,8 +2,8 @@
 
 <p style="text-align: left;">
   <a href="LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/Arama0517/hoi4-mods-manager"></a>
-  <a href="https://github.com/Arama0517/hoi4-mods-manager/actions/workflows/check.yml"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Arama0517/hoi4-mods-manager/check.yml?label=CI"></a>
-  <a href="https://github.com/Arama0517/hoi4-mods-manager/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/Arama0517/hoi4-mods-manager"></a>
+  <a href="../../actions/workflows/check.yml"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/Arama0517/hoi4-mods-manager/check.yml?label=CI"></a>
+  <a href="../../releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/Arama0517/hoi4-mods-manager"></a>
 </p>
 
 ## 使用方式
