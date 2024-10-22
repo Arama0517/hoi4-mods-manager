@@ -8,7 +8,7 @@
 
 ## 使用方式
 
-1. 从[发行版](https://github.com/Arama0517/hoi4-mod-manager/releases/latest)下载最新版本
+1. 从[发行版](../../releases/latest)下载最新版本
 2. 解压到游戏的根目录
 3. 运行
 
