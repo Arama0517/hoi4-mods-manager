@@ -12,7 +12,8 @@
 2. 解压到游戏的根目录
 3. 运行
 
-> [!WARNING] 内置的账号不一定可用
+> [!WARNING]
+> 内置的账号不一定可用
 
 ## 完成的功能
 
@@ -51,7 +52,8 @@
 
 ## 加速 `uv` 下载依赖和 `python`
 
-> [!TIP] 仅适用于中国地区用户
+> [!TIP]
+> 仅适用于中国地区用户
 
 1. 设置环境变量 `UV_PYTHON_INSTALL_MIRROR` 为 `https://ghp.ci/https://github.com/indygreg/python-build-standalone/releases/download`
 2. 进入 `~\AppData\Roaming\uv` _如果没有这个目录就新建一个_
