@@ -5,6 +5,10 @@ def init():
 
     from src.settings import settings
 
+    # 设置 logger
+    logger.remove()
+    logger.add(RichHandler())
+
     # 适配用反代加速Steam的工具
     origin = requests.Session.__init__
 
@@ -13,10 +17,6 @@ def init():
         self.verify = settings['ssl']
 
     requests.Session.__init__ = patched
-
-    # 设置 logger
-    logger.remove()
-    logger.add(RichHandler())
 
 
 init()
