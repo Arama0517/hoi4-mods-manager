@@ -1,8 +1,6 @@
 import json
 import os
 
-from steam.webauth import WebAuth
-
 from src.path import LAUNCHER_SETTINGS_FILE_PATH
 
 __all__ = ['DEFAULT_USERS', 'settings', 'save_settings']
@@ -17,19 +15,11 @@ def _init_settings():
     with LAUNCHER_SETTINGS_FILE_PATH.open('r', encoding='utf-8') as f:
         _settings = json.load(f)
 
+    if 'ssl' not in _settings:
+        _settings['ssl'] = True
+
     if 'users' not in _settings:
         _settings['users'] = {}
-        for user_name, password in DEFAULT_USERS.items():
-            webauth = WebAuth()
-            try:
-                webauth.login(user_name, password)
-            except Exception:
-                continue
-            _settings['users'][user_name] = {
-                'user_name': user_name,
-                'password': password,
-                'token': webauth.refresh_token,
-            }
 
     if 'mods' not in _settings:
         _settings['mods'] = {}

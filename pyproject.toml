@@ -33,6 +33,9 @@ fix = true
 [tool.ruff.lint]
 select = ["E", "W", "F", "N", "I"]
 
+#[tool.ruff.lint.per-file-ignores]
+#"src/main.py" = ["E402"]
+
 [tool.ruff.lint.isort]
 combine-as-imports = true
 

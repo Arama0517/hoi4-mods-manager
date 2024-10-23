@@ -10,7 +10,6 @@ __all__ = ['client', 'cdn_client']
 
 
 client = SteamClient()
-
 for user_name, user_info in settings['users'].items():
     logger.info(f'尝试登录: {user_name}')
     while True:
