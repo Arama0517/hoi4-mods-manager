@@ -1,3 +1,8 @@
+import warnings
+
+import urllib3
+
+
 def init():
     import requests
     from loguru import logger
@@ -14,7 +19,9 @@ def init():
 
     def patched(self):
         origin(self)
-        self.verify = settings['ssl']
+        self.verify = settings.get('ssl') or True
+
+    warnings.filterwarnings('ignore', category=urllib3.exceptions.InsecureRequestWarning)
 
     requests.Session.__init__ = patched
 

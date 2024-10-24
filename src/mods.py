@@ -1,19 +1,18 @@
-from concurrent.futures import ThreadPoolExecutor
+import asyncio
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Iterator
 
+import aiofiles
 from rich.progress import (
-    BarColumn,
     Progress,
-    ProgressColumn,
     TaskID,
-    TextColumn,
 )
-from steam.client.cdn import CDNClient, CDNDepotFile, CDNDepotManifest
+from steam.client.cdn import CDNDepotFile, CDNDepotManifest
 
 from src.path import MODS_DIR_PATH
 from src.settings import settings
+from src.steam_clients import cdn_client
 
 __all__ = ['download']
 
@@ -30,28 +29,27 @@ def _format_size(size: int):
     return f'{size:.2f} {units[unit_index]}'
 
 
-def _write_mod_files(
-    files: Iterator[CDNDepotFile],
+async def _write_mod_files(
+    cdn_files: Iterator[CDNDepotFile],
     download_path: Path,
     progress: Progress,
     task_id: TaskID,
 ):
-    for file in files:
-        file_path: Path = download_path / file.filename
+    for cdn_file in cdn_files:
+        file_path: Path = download_path / cdn_file.filename
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # 分片写入
-        with file_path.open('wb') as f:
-            if file.size >= 1048576:
+        async with aiofiles.open(file_path, 'wb') as f:
+            if cdn_file.size >= 1048576:
                 while True:
-                    data: bytes = file.read(settings['max_chunk_size'])
+                    data: bytes = cdn_file.read(settings['max_chunk_size'])
                     if not data:
                         break
-                    f.write(data)
+                    await f.write(data)
                     progress.advance(task_id, len(data))
             else:
-                f.write(file.read())
-                progress.advance(task_id, file.size)
+                await f.write(cdn_file.read())
+                progress.advance(task_id, cdn_file.size)
 
 
 def _sort_cdn_depot_files(
@@ -75,40 +73,24 @@ def _sort_cdn_depot_files(
                 min_chunk_index = i
                 min_size = chunk_sizes[i]
 
-    total_size = sum(chunk_sizes)
-
-    return (iter(chunk) for chunk in chunks), total_size
+    return (iter(chunk) for chunk in chunks), sum(chunk_sizes)
 
 
-class FileSizeProgressColumn(ProgressColumn):
-    total: str = ''
-
-    def __init__(self):
-        super().__init__()
-
-    def render(self, task):
-        if not self.total:
-            self.total = _format_size(int(task.total))
-        if task.finished:
-            return ''
-        return f'[red]{_format_size(int(task.completed))} [bold dim]/ [green]{self.total}'
-
-
-def download(item_id: str, steam_cdn_client: CDNClient) -> timedelta:
-    manifest = steam_cdn_client.get_manifest_for_workshop_item(int(item_id))
+async def _download(item_id: str) -> timedelta:
+    manifest = cdn_client.get_manifest_for_workshop_item(int(item_id))
     if isinstance(manifest, Exception):
         raise manifest
     download_path = MODS_DIR_PATH / item_id
     start_time = datetime.now()
-    with Progress(
-        TextColumn('[progress.description]{task.description}'),
-        BarColumn(),
-        # TaskProgressColumn(),
-        FileSizeProgressColumn(),
-    ) as progress:
+    with Progress() as progress:
         chunks, files_size = _sort_cdn_depot_files(manifest)
         task_id = progress.add_task('[bold dim]正在下载模组中...', total=files_size)
-        with ThreadPoolExecutor(max_workers=settings['download_max_threads']) as executor:
-            for chunk in chunks:
-                executor.submit(_write_mod_files, chunk, download_path, progress, task_id)
+
+        tasks = [_write_mod_files(chunk, download_path, progress, task_id) for chunk in chunks]
+        await asyncio.gather(*tasks)
+
     return datetime.now() - start_time
+
+
+def download(item_id: str) -> timedelta:
+    return asyncio.run(_download(item_id))

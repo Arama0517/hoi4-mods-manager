@@ -1,15 +1,15 @@
 from prompt_toolkit.shortcuts import input_dialog, message_dialog, radiolist_dialog, yes_no_dialog
-from steam.client import SteamClient
 from steam.enums import EResult
 from steam.webauth import WebAuth
 
 from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
 from src.settings import save_settings, settings
+from src.steam_clients import client
 
 __all__ = ['users']
 
 
-def users(steam_client: SteamClient):
+def users():
     while True:
         match radiolist_dialog(
             PROMPT_TOOLKIT_DIALOG_TITLE,
@@ -22,14 +22,14 @@ def users(steam_client: SteamClient):
             ],
         ).run():
             case 'add':
-                _add(steam_client)
+                _add()
             case 'remove':
-                _remove(steam_client)
+                _remove()
             case _:
                 return
 
 
-def _add(steam_client: SteamClient):
+def _add():
     while True:
         user_name = input_dialog(
             PROMPT_TOOLKIT_DIALOG_TITLE, '请输入用户的名字', '确认', '返回'
@@ -59,14 +59,14 @@ def _add(steam_client: SteamClient):
         }
         save_settings()
 
-        if not steam_client.logged_on:
-            if steam_client.login(user_name, access_token=webauth.refresh_token) != EResult.OK:
-                steam_client.logout()
+        if not client.logged_on:
+            if client.login(user_name, access_token=webauth.refresh_token) != EResult.OK:
+                client.logout()
         message_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '添加成功', '确认').run()
         return
 
 
-def _remove(steam_client: SteamClient):
+def _remove():
     options = []
     for user_name in settings['users'].keys():
         options += [(user_name, user_name)]
@@ -82,6 +82,6 @@ def _remove(steam_client: SteamClient):
     if yes_no_dialog(PROMPT_TOOLKIT_DIALOG_TITLE, '真的要移除吗?', '确认', '取消').run():
         del settings['users'][user_name]
         save_settings()
-        if steam_client.username == user_name:
-            steam_client.logout()
+        if client.username == user_name:
+            client.logout()
     return

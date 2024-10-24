@@ -10,7 +10,6 @@ from prompt_toolkit.shortcuts import input_dialog, message_dialog, radiolist_dia
 from steam import webapi
 from steam.webauth import WebAuth, WebAuthException
 
-from src import pages
 from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
 from src.pages.settings.certificate import CertificatePathValidator
 from src.path import DATA_DIR_PATH, MOD_BOOT_FILES_PATH, MODS_DIR_PATH
@@ -23,38 +22,41 @@ DEFAULT_USERS = {
 
 
 def init_ssl():
-    # 检测SSL错误
     while True:
         try:
             webapi.get('ISteamWebAPIUtil', 'GetServerInfo')
             break
         except requests.exceptions.SSLError:
-            ssl = radiolist_dialog(
-                PROMPT_TOOLKIT_DIALOG_TITLE,
-                'SSL错误\n请选择一个选项',
-                '确认',
-                '退出',
-                [
-                    ('retry', '重试'),
-                    ('disable_ssl', '关闭证书认证'),
-                    ('set_local_certificate', '设置本地证书路径'),
-                ],
-            ).run()
-            match ssl:
-                case None:
-                    sys.exit(1)
-                case 'retry':
-                    continue
-                case 'disable_ssl':
-                    settings['ssl'] = False
-                case 'set_local_certificate':
-                    certificate_path = input_dialog(
-                        PROMPT_TOOLKIT_DIALOG_TITLE,
-                        '请输入证书路径',
-                        validator=CertificatePathValidator(),
-                    ).run()
-                    settings['ssl'] = certificate_path
-            save_settings()
+            text = 'SSL错误'
+        except OSError:
+            text = '证书不存在'
+        text += '\n请选择一个选项'
+        ssl = radiolist_dialog(
+            PROMPT_TOOLKIT_DIALOG_TITLE,
+            text,
+            '确认',
+            '退出',
+            [
+                ('retry', '重试'),
+                ('disable_ssl', '关闭证书认证'),
+                ('set_local_certificate', '设置本地证书路径'),
+            ],
+        ).run()
+        match ssl:
+            case None:
+                sys.exit(1)
+            case 'retry':
+                continue
+            case 'disable_ssl':
+                settings['ssl'] = False
+            case 'set_local_certificate':
+                certificate_path = input_dialog(
+                    PROMPT_TOOLKIT_DIALOG_TITLE,
+                    '请输入证书路径',
+                    validator=CertificatePathValidator(),
+                ).run()
+                settings['ssl'] = certificate_path
+        save_settings()
 
 
 def init_settings():
@@ -97,8 +99,6 @@ def init_settings():
 
 
 def main():
-    from src.steam_clients import cdn_client, client
-
     def except_hook(exc_type, exc_value, exc_traceback):
         message_dialog(
             PROMPT_TOOLKIT_DIALOG_TITLE,
@@ -116,7 +116,6 @@ def main():
 
     atexit.register(exit_hook)
 
-    # 初始化SSL
     init_ssl()
 
     # 初始化配置文件
@@ -124,6 +123,9 @@ def main():
 
     MODS_DIR_PATH.mkdir(parents=True, exist_ok=True)
     MOD_BOOT_FILES_PATH.mkdir(parents=True, exist_ok=True)
+
+    from src import pages
+    from src.steam_clients import client
 
     while True:
         text = '请选择一个选项'
@@ -145,13 +147,13 @@ def main():
                 pages.start()
                 break
             case 'install':
-                pages.install(cdn_client)
+                pages.install()
             case 'uninstall':
                 pages.uninstall()
             case 'update':
-                pages.update(cdn_client)
+                pages.update()
             case 'settings':
-                pages.settings(client)
+                pages.settings()
             case _:
                 break
 

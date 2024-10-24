@@ -1,5 +1,4 @@
 from prompt_toolkit.shortcuts import radiolist_dialog
-from steam.client import SteamClient
 
 from src.dialog import PROMPT_TOOLKIT_DIALOG_TITLE
 from src.pages.settings.certificate import certificate
@@ -10,7 +9,7 @@ from src.pages.settings.users import users
 __all__ = ['main']
 
 
-def main(steam_client: SteamClient):
+def main():
     options = [
         ('users', 'steam账号'),
         ('download_threads', '下载时使用线程的最大数量'),
@@ -22,7 +21,7 @@ def main(steam_client: SteamClient):
             PROMPT_TOOLKIT_DIALOG_TITLE, '请选择要配置的选项', '确认', '返回', options
         ).run():
             case 'users':
-                users(steam_client)
+                users()
             case 'download_threads':
                 download_max_threads()
             case 'max_chunk_size':

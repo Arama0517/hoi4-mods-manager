@@ -36,8 +36,9 @@
 ## 环境要求
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- [rust](https://www.rust-lang.org/zh-CN/tools/install)
+- [VS 2022 Build Tools](https://visualstudio.microsoft.com/zh-hans/downloads/#build-tools-for-visual-studio-2022)
 - [task](https://taskfile.dev/installation/) 类似 `make` (可选)
-- [VS 2022 Build Tools](https://visualstudio.microsoft.com/zh-hans/downloads/#build-tools-for-visual-studio-2022) 用于 nuitka 构建
 
 ## 初始化项目
 
